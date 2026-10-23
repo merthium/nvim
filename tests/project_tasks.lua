@@ -1,0 +1,70 @@
+local function check()
+  vim.opt.rtp:prepend(vim.fn.stdpath('config'))
+  vim.cmd('filetype on')
+  local project = require('custom.ide.project')
+  local tasks = require('custom.ide.tasks')
+  local base = vim.fn.tempname() .. " project's [tasks]"
+  local root = base .. '/app'
+  vim.fn.mkdir(root .. '/src', 'p')
+  local function manifest(value)
+    vim.fn.writefile({type(value) == 'string' and value or vim.json.encode(value)}, root .. '/.nvim-project.json')
+  end
+  vim.fn.writefile({'print("saved")'}, root .. '/src/main.py')
+  vim.cmd.edit(vim.fn.fnameescape(root .. '/src/main.py'))
+  manifest({version=1, template='python', tasks={run={{'python3', 'src/main.py'}}, test={{'python3','-m','unittest'}}, setup={{'python3','-m','venv','.venv'}}}})
+  assert(project.root() == root, 'task manifest must anchor nested source root')
+  local plan, err = tasks.plan('run')
+  assert(plan and plan[1].cwd == root and plan[1].cmd[2] == 'src/main.py', err or 'manifest must control entry point')
+  assert(tasks.plan('setup')[1].cmd[2] == '-m', 'setup must use explicit task')
+  local missing, no_action = tasks.plan('build')
+  assert(not missing and no_action:find('build', 1, true), 'missing action needs useful feedback')
+  vim.fn.mkdir(root .. '/.venv/bin', 'p')
+  vim.fn.writefile({'#!/bin/sh', 'exit 0'}, root .. '/.venv/bin/python')
+  vim.fn.setfperm(root .. '/.venv/bin/python', 'rwx------')
+  assert(tasks.plan('run')[1].cmd[1] == root .. '/.venv/bin/python', 'generated projects must use local Python env')
+  assert(tasks.plan('setup')[1].cmd[1] == 'python3', 'venv recreation must use system interpreter')
+  for _, invalid in ipairs({'{broken', '{}', '{"version":99,"tasks":{}}', '{"version":1,"tasks":{"run":"echo broken"}}', '{"version":1,"tasks":{"run":[["sh",7]]}}', '{"version":1,"tasks":{"run":[[]]}}'}) do
+    manifest(invalid)
+    local invalid_plan, message = tasks.plan('run')
+    assert(not invalid_plan and type(message) == 'string', 'invalid manifest must stop: ' .. invalid)
+  end
+  local fake = 'uninstalled-ide-test-tool-7654321'
+  local ok, message = tasks.available({{cmd={'sh','-c','true'},cwd=root},{cmd={fake},cwd=root}})
+  assert(not ok and message:find(fake, 1, true), 'check all external tools before starting a task chain')
+  assert(tasks.available({{cmd={'cc','main.c','-o','build/app'},cwd=root},{cmd={'./build/app'},cwd=root}}), 'allow build outputs created by previous steps')
+  manifest({version=1, tasks={run={{'printf','OLD'}}}})
+  local manifest_buf = vim.fn.bufadd(root .. '/.nvim-project.json')
+  vim.fn.bufload(manifest_buf)
+  vim.api.nvim_buf_set_lines(manifest_buf, 0, -1, false, {vim.json.encode({version=1, tasks={run={{'printf','NEW'}}}})})
+  local original_start, captured = tasks.start
+  tasks.start = function(value) captured = value end
+  tasks.run('run')
+  tasks.start = original_start
+  assert(captured and captured[1].cmd[2] == 'NEW', 'run must plan from newly saved task edits')
+  vim.fn.writefile({'Microsoft Visual Studio Solution File'}, base .. '/outer.sln')
+  vim.fn.writefile({'Console.WriteLine("hello");'}, root .. '/Program.cs')
+  vim.cmd.edit(vim.fn.fnameescape(root .. '/Program.cs'))
+  assert(project.root() == root, 'generated C# project must win over outer solution')
+  vim.cmd.edit(vim.fn.fnameescape(root .. '/src/main.py'))
+  local other = vim.fn.bufadd(base .. '/elsewhere.py')
+  vim.fn.bufload(other)
+  vim.api.nvim_buf_set_lines(other, 0, -1, false, {'unrelated unsaved work'})
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, {'print("updated")'})
+  assert(project.save(root), 'named project buffers should save before explicit execution')
+  assert(vim.fn.readfile(root .. '/src/main.py')[1] == 'print("updated")', 'run must see newest contents')
+  assert(vim.bo[other].modified and vim.fn.filereadable(base .. '/elsewhere.py') == 0, 'do not save unrelated projects')
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, {'readonly change'})
+  vim.bo.readonly = true
+  assert(not project.save(root), 'readonly changes must stop execution')
+  vim.bo.readonly, vim.bo.modified = false, false
+  vim.api.nvim_buf_delete(other, {force=true})
+  vim.cmd('enew!')
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, {'unnamed work'})
+  assert(not project.save(root), 'unnamed changes must not be silently discarded')
+  vim.cmd('enew!')
+  vim.fn.delete(base, 'rf')
+  print('PASS: manifest roots/actions/validation, Python env, missing tools, scoped save, readonly and unnamed protection')
+end
+local ok, err = xpcall(check, debug.traceback)
+if not ok then io.stderr:write(err .. '\n'); vim.cmd('cquit 1') end
+vim.cmd('qa!')

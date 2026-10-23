@@ -1,0 +1,9 @@
+*.log
+*.swp
+*.bak
+__pycache__/
+*.pyc
+.env
+.env.*
+/data/
+/state/
