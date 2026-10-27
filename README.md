@@ -35,12 +35,13 @@ The leader is Space. Useful keys:
 | `Space ?` | Key reference |
 | `Page Up` / `Page Down` | Scroll the viewport one line |
 | `Ctrl+↑` / `Ctrl+↓` | Jump to the previous/next blank-line block boundary, including insert mode |
-| `Alt+↑` / `Alt+↓` | Move the current line or selected block; also works in insert mode |
+| `Shift+↑` / `Shift+↓` | Move the current line or selected block; also works in insert mode |
 | `Ctrl+d` | Select the word; press again to add the next match |
 | `Ctrl+c` | Copy the selection, or the current line when nothing is selected |
 | `Ctrl+v` | Paste; replacing a selection preserves the clipboard |
 | `cc` in normal/visual mode | Toggle comments on the current line or one selected block; keep the block selected |
 | `Enter` in normal mode | Open a new line below, follow indentation and start typing there |
+| `Shift+Enter` in insert mode | Open a new line below without splitting the current line |
 
 For multiple matches, press `Ctrl+d` repeatedly, then `c`, type the replacement,
 and press `Esc` twice to leave insert mode and clear the extra cursors.
@@ -55,13 +56,17 @@ Letters still type normally in insert mode. Deleting or changing text does not
 overwrite the system clipboard. Terminal input keeps its own shortcuts,
 including `Ctrl+c` to interrupt a running program.
 
-URxvt needs standard modified-arrow sequences for `Ctrl+↑/↓`. Add these alongside
+URxvt needs standard sequences for modified arrows and `Shift+Enter`. Add these alongside
 the other URxvt keys in `~/.Xresources`, run `xrdb -merge ~/.Xresources`, then open
 a new terminal:
 
 ```text
 URxvt.keysym.Control-Up: \033[1;5A
 URxvt.keysym.Control-Down: \033[1;5B
+URxvt.keysym.Shift-Up: \033[1;2A
+URxvt.keysym.Shift-Down: \033[1;2B
+URxvt.keysym.Shift-Return: \033[13;2u
+URxvt.keysym.Shift-KP_Enter: \033[13;2u
 ```
 
 This prevents URxvt's legacy `Esc O a/b` sequences from being interpreted as text.

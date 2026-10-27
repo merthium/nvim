@@ -4,11 +4,12 @@ require('custom.mouse').setup()
 map('i', 'jk', '<Esc>', {desc = 'Normal mod'})
 map('i', 'kj', '<Esc>', {desc = 'Normal mod'})
 map('n', '<CR>', 'o', {desc = 'Altına yeni satır aç ve yaz'})
+map('i', '<S-CR>', '<Esc>o', {desc = 'Altına yeni satır aç ve yaz'})
 map({'n', 'x', 's', 'i'}, '<PageUp>', '<Cmd>normal! <C-y><CR>', {desc = 'Ekranı bir satır yukarı kaydır', silent = true})
 map({'n', 'x', 's', 'i'}, '<PageDown>', '<Cmd>normal! <C-e><CR>', {desc = 'Ekranı bir satır aşağı kaydır', silent = true})
 -- Reuse LazyVim's line/block movement, including indentation and insert mode.
-map({'n', 'x', 'i'}, '<A-Up>', '<A-k>', {remap = true, desc = 'Satırı / seçimi yukarı taşı'})
-map({'n', 'x', 'i'}, '<A-Down>', '<A-j>', {remap = true, desc = 'Satırı / seçimi aşağı taşı'})
+map({'n', 'x', 'i'}, '<S-Up>', '<A-k>', {remap = true, desc = 'Satırı / seçimi yukarı taşı'})
+map({'n', 'x', 'i'}, '<S-Down>', '<A-j>', {remap = true, desc = 'Satırı / seçimi aşağı taşı'})
 map('n', '<C-d>', 'viw', {desc = 'Kelimeyi seç'})
 map('x', '<C-d>', function() require('multicursor-nvim').matchAddCursor(1) end,
   {desc = 'Sonraki eşleşmeyi seçime ekle'})
@@ -129,12 +130,13 @@ local function help()
       'Ctrl s / Ctrl p  Kaydet / dosya bul',
       'Page Up / Down   Ekranı bir satır yukarı / aşağı kaydır',
       'Ctrl ↑ / ↓       Önceki / sonraki blok sınırına git',
-      'Alt ↑ / ↓        Satırı / seçili bloğu taşı',
+      'Shift ↑ / ↓      Satırı / seçili bloğu taşı',
       'Ctrl d           Kelimeyi seç; tekrar bas: eşleşme ekle',
       'c → yaz → Esc Esc  Seçilen eşleşmeleri değiştir ve çık',
       'Ctrl c / Ctrl v  Kopyala / panoyu koruyarak yapıştır',
       'cc               Satırı / seçimi yorum yap veya kaldır',
       'Enter (normal)   Altına yeni satır aç ve yaz',
+      'Shift Enter (yazma)  Altına yeni satır aç ve yaz',
       'F6 / Space rr    Derle ve çalıştır',
       'F7               Proje terminalini aç / kapat',
       'Space t / rl     Çıktı panelini aç / kapat',
