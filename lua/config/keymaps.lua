@@ -3,8 +3,8 @@ local ide = require('custom.ide.actions')
 require('custom.mouse').setup()
 map('i', 'jk', '<Esc>', {desc = 'Normal mod'})
 map('i', 'kj', '<Esc>', {desc = 'Normal mod'})
-map({'n', 'x', 's', 'i'}, '<PageUp>', '<Up>', {desc = 'Bir satır yukarı'})
-map({'n', 'x', 's', 'i'}, '<PageDown>', '<Down>', {desc = 'Bir satır aşağı'})
+map({'n', 'x', 's', 'i'}, '<PageUp>', '<Cmd>normal! <C-y><CR>', {desc = 'Ekranı bir satır yukarı kaydır', silent = true})
+map({'n', 'x', 's', 'i'}, '<PageDown>', '<Cmd>normal! <C-e><CR>', {desc = 'Ekranı bir satır aşağı kaydır', silent = true})
 map('n', '<leader><leader>', '<cmd>update<cr>', {desc = 'Kaydet'})
 local function window_mode(direction)
   if direction then vim.cmd.wincmd(direction) end
@@ -98,7 +98,7 @@ local function help()
     text = table.concat({
       'Space Space      Kaydet',
       'Ctrl s / Ctrl p  Kaydet / dosya bul',
-      'Page Up / Down   Bir satır yukarı / aşağı',
+      'Page Up / Down   Ekranı bir satır yukarı / aşağı kaydır',
       'F6 / Space rr    Derle ve çalıştır',
       'F7               Proje terminalini aç / kapat',
       'Space t / rl     Çıktı panelini aç / kapat',
