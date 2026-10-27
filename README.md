@@ -34,6 +34,7 @@ The leader is Space. Useful keys:
 | `-` | Edit directory with Oil |
 | `Space ?` | Key reference |
 | `Page Up` / `Page Down` | Scroll the viewport one line |
+| `Ctrl+↑` / `Ctrl+↓` | Jump to the previous/next blank-line block boundary, including insert mode |
 | `Alt+↑` / `Alt+↓` | Move the current line or selected block; also works in insert mode |
 | `Ctrl+d` | Select the word; press again to add the next match |
 | `Ctrl+c` | Copy the selection, or the current line when nothing is selected |
@@ -49,6 +50,17 @@ middle-click paste and insert/command-line register paste (`Ctrl+r`) are disable
 Letters still type normally in insert mode. Deleting or changing text does not
 overwrite the system clipboard. Terminal input keeps its own shortcuts,
 including `Ctrl+c` to interrupt a running program.
+
+URxvt needs standard modified-arrow sequences for `Ctrl+↑/↓`. Add these alongside
+the other URxvt keys in `~/.Xresources`, run `xrdb -merge ~/.Xresources`, then open
+a new terminal:
+
+```text
+URxvt.keysym.Control-Up: \033[1;5A
+URxvt.keysym.Control-Down: \033[1;5B
+```
+
+This prevents URxvt's legacy `Esc O a/b` sequences from being interpreted as text.
 
 `:IDEInfo` reports available language tools. Change project search directories in `lua/plugins/navigation.lua`. Some personal command labels and messages are in Turkish. Optional Exercism shortcuts expect exercises under `~/code/exercism`; account configuration is not included.
 

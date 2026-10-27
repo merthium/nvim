@@ -73,6 +73,12 @@ map({'n', 'x'}, '<C-Left>', 'b', {desc = 'Önceki kelime'})
 map({'n', 'x'}, '<C-Right>', 'w', {desc = 'Sonraki kelime'})
 map('i', '<C-Left>', '<C-o>b')
 map('i', '<C-Right>', '<C-o>w')
+map({'n', 'x'}, '<C-Up>', '{', {desc = 'Önceki blok sınırına git'})
+map({'n', 'x'}, '<C-Down>', '}', {desc = 'Sonraki blok sınırına git'})
+map('i', '<C-Up>', '<C-o>{', {desc = 'Önceki blok sınırına git'})
+map('i', '<C-Down>', '<C-o>}', {desc = 'Sonraki blok sınırına git'})
+map('s', '<C-Up>', '<C-g>{<C-g>', {desc = 'Önceki blok sınırına git'})
+map('s', '<C-Down>', '<C-g>}<C-g>', {desc = 'Sonraki blok sınırına git'})
 map({'i', 'c'}, '<C-BS>', '<C-w>')
 map('n', '<leader>cI', ide.info, {desc = 'Bu dosyanın IDE ve araç durumu'})
 map('n', '<leader>rn', ide.rename, {desc = 'Sembolü yeniden adlandır'})
@@ -119,6 +125,7 @@ local function help()
       'Space Space      Kaydet',
       'Ctrl s / Ctrl p  Kaydet / dosya bul',
       'Page Up / Down   Ekranı bir satır yukarı / aşağı kaydır',
+      'Ctrl ↑ / ↓       Önceki / sonraki blok sınırına git',
       'Alt ↑ / ↓        Satırı / seçili bloğu taşı',
       'Ctrl d           Kelimeyi seç; tekrar bas: eşleşme ekle',
       'c → yaz → Esc Esc  Seçilen eşleşmeleri değiştir ve çık',
