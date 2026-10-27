@@ -24,23 +24,90 @@ end
 local ok, err = xpcall(function()
   call('nvim_ui_attach', 100, 35, {rgb = true})
   lua([[require('lazyvim.config').load('keymaps')
+    if vim.env.NVIM_TEST_REAL_CLIPBOARD == '1' then
+      assert(vim.fn.has('clipboard') == 1, 'system clipboard provider unavailable')
+      return
+    end
     -- An in-memory clipboard avoids changing the user's desktop clipboard.
-    local value = {'KEEP'}
+    local value, kind = {'KEEP'}, 'v'
+    local function copy(lines, regtype) value, kind = lines, regtype end
+    local function paste() return {value, kind} end
     vim.g.clipboard = {
       name = 'editing-test', cache_enabled = 0,
-      copy = {['+'] = function(lines) value = lines end, ['*'] = function(lines) value = lines end},
-      paste = {['+'] = function() return {value, 'v'} end, ['*'] = function() return {value, 'v'} end},
+      copy = {['+'] = copy, ['*'] = copy},
+      paste = {['+'] = paste, ['*'] = paste},
     }
   ]])
-  for _, paste in ipairs({'p', '<Space>p'}) do
+  for _, select in ipairs({'viw', 'viw<C-g>'}) do
     reset({'one two'})
     lua([[vim.fn.setreg('+', 'KEEP', 'v')]])
-    keys('viw' .. paste)
+    keys(select .. '<C-v>')
     expect({'KEEP two'})
     assert(lua([[return vim.fn.getreg('+')]]) == 'KEEP', 'paste overwrote clipboard')
-    keys('wviw' .. paste)
+    keys('w' .. select .. '<C-v>')
     expect({'KEEP KEEP'})
   end
+  for _, select in ipairs({'viw', 'viw<C-g>'}) do
+    reset({'source target'})
+    keys(select .. '<C-c>')
+    assert(lua([[return vim.fn.getreg('+')]]) == 'source', 'Ctrl+C did not copy selection')
+    expect({'source target'})
+  end
+  for _, prefix in ipairs({'', 'i'}) do
+    reset({'whole line', 'next'})
+    keys(prefix .. '<C-c>')
+    assert(lua([[return vim.fn.getreg('+')]]) == 'whole line\n', 'Ctrl+C must copy current line')
+    assert(call('nvim_get_mode').mode == (prefix == '' and 'n' or 'i'), 'copy changed editor mode')
+  end
+  reset({'whole line', 'next'})
+  keys('<C-c><C-v>')
+  expect({'whole line', 'whole line', 'next'})
+  reset({'abc'})
+  lua([[vim.fn.setreg('+', {'İlk\t"satır"', 'ikinci'}, 'v')]])
+  keys('i<C-v><Esc>')
+  expect({'İlk\t"satır"', 'ikinciabc'})
+  keys('u')
+  expect({'abc'})
+  reset({'abc'})
+  lua([[vim.fn.setreg('+', 'literal.*[text]', 'v')]])
+  keys('/<C-v>')
+  assert(lua([[return vim.fn.getcmdline()]]) == 'literal.*[text]', 'command-line paste changed text')
+  keys('<Esc>')
+  reset({'first', 'second', 'last'})
+  keys('Vj<C-c>')
+  assert(lua([[return vim.fn.getreg('+')]]) == 'first\nsecond\n', 'multiline copy failed')
+  keys('jV<C-v>')
+  expect({'first', 'first', 'second', 'last'})
+  assert(lua([[return vim.fn.getreg('+')]]) == 'first\nsecond\n', 'linewise paste overwrote clipboard')
+  reset({'source delete'})
+  keys('viw<C-c>wdw')
+  assert(lua([[return vim.fn.getreg('+')]]) == 'source', 'deleting text overwrote clipboard')
+  -- Old editor shortcuts must do nothing; letters remain normal insert-mode text.
+  for _, old in ipairs({'y', 'Y', 'p', 'P', 'gp', 'gP', '[p', ']p', '[P', ']P',
+    '<Space>y', '<Space>p', '<C-Insert>', '<S-Insert>'}) do
+    for _, selection in ipairs({'', 'viw'}) do
+      reset({'one two'})
+      lua([[vim.fn.setreg('+', 'KEEP', 'v')]])
+      keys(selection .. old)
+      expect({'one two'})
+      assert(lua([[return vim.fn.getreg('+')]]) == 'KEEP', 'old shortcut changed clipboard: ' .. old)
+      assert(call('nvim_get_mode').mode == (selection == '' and 'n' or 'v'), 'old shortcut changed mode: ' .. old)
+    end
+  end
+  reset({''})
+  keys('iypYP<C-Insert><S-Insert><C-r><Esc>')
+  expect({'ypYP'})
+  reset({'foo foo foo'})
+  keys('<C-d><C-d><C-d><C-c><Esc><Esc>')
+  assert(lua([[return vim.fn.getreg('+')]]) == 'foo', 'multicursor copy failed')
+  expect({'foo foo foo'})
+  reset({'foo foo foo'})
+  lua([[vim.fn.setreg('+', 'KEEP', 'v')]])
+  keys('<C-d><C-d><C-d><C-v><Esc><Esc>')
+  expect({'KEEP KEEP KEEP'})
+  assert(lua([[return vim.fn.getreg('+')]]) == 'KEEP', 'multicursor paste overwrote clipboard')
+  keys('u')
+  expect({'foo foo foo'})
   reset({'one', 'two', 'three'}, 2)
   keys('<A-Up>')
   expect({'two', 'one', 'three'})
@@ -66,7 +133,9 @@ local ok, err = xpcall(function()
   assert(not lua([[return require('multicursor-nvim').hasCursors()]]), 'Escape did not clear cursors')
   keys('u')
   expect({'foo foo foo untouched'})
-  print('PASS: repeated paste preserves clipboard; Alt+arrows move lines/blocks; Ctrl+D selects and edits matches; Escape and undo work')
+  assert(lua([[return vim.fn.maparg('<C-c>', 't')]]) == '', 'terminal interrupt was remapped')
+  assert(lua([[return vim.v.errmsg]]) == '', 'Neovim reported an error')
+  print('PASS: Ctrl+C/V, preserved clipboard, disabled legacy keys, multiline text, multicursor paste/undo, Alt+arrows and Ctrl+D')
 end, debug.traceback)
 vim.fn.jobstop(child)
 if not ok then io.stderr:write(err .. '\n'); vim.cmd('cquit 1') end

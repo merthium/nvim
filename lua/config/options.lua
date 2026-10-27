@@ -30,7 +30,9 @@ opt.winborder = 'rounded'
 opt.signcolumn = "no"
 opt.laststatus = 2
 opt.updatetime = 50
-opt.clipboard = "unnamedplus"
+-- Deleting/changing text must not replace an explicitly copied clipboard.
+-- Ctrl+C / Ctrl+V access the system clipboard (+) directly.
+opt.clipboard = ""
 opt.mouse = "a"
 opt.cursorline = true
 opt.scrolloff = 8

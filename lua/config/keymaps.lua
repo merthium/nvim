@@ -8,7 +8,6 @@ map({'n', 'x', 's', 'i'}, '<PageDown>', '<Cmd>normal! <C-e><CR>', {desc = 'Ekran
 -- Reuse LazyVim's line/block movement, including indentation and insert mode.
 map({'n', 'x', 'i'}, '<A-Up>', '<A-k>', {remap = true, desc = 'Satırı / seçimi yukarı taşı'})
 map({'n', 'x', 'i'}, '<A-Down>', '<A-j>', {remap = true, desc = 'Satırı / seçimi aşağı taşı'})
-map('x', 'p', 'P', {desc = 'Panoyu koruyarak seçimin üzerine yapıştır'})
 map('n', '<C-d>', 'viw', {desc = 'Kelimeyi seç'})
 map('x', '<C-d>', function() require('multicursor-nvim').matchAddCursor(1) end,
   {desc = 'Sonraki eşleşmeyi seçime ekle'})
@@ -28,10 +27,24 @@ map('n', '<leader>n', '<cmd>enew<cr>', {desc = 'Yeni dosya'})
 map('n', '<leader>bn', '<cmd>bnext<cr>', {desc = 'Sonraki dosya'})
 map('n', '<leader>bp', '<cmd>bprevious<cr>', {desc = 'Önceki dosya'})
 map('n', '<leader>bo', require('custom.workflow').open_recent, {desc = 'Projenin son dosyaları'})
-map('n', '<leader>y', '"+y', {desc = 'Panoya kopyala'})
-map('x', '<leader>y', '"+y', {desc = 'Panoya kopyala'})
-map('n', '<leader>p', '"+p', {desc = 'Panodan yapıştır'})
-map('x', '<leader>p', '"+P', {desc = 'Panoyu koruyarak seçimin üzerine yapıştır'})
+-- Explicit system-clipboard access; nonrecursive RHS keeps these working even
+-- though the old yank/put keys below are disabled.
+map('n', '<C-c>', '"+yy', {desc = 'Satırı panoya kopyala'})
+map('i', '<C-c>', '<C-o>"+yy', {desc = 'Satırı panoya kopyala'})
+map('x', '<C-c>', '"+y', {desc = 'Seçimi panoya kopyala'})
+map('s', '<C-c>', '<C-g>"+y', {desc = 'Seçimi panoya kopyala'})
+map('n', '<C-v>', '"+p', {desc = 'Panodan yapıştır'})
+map('x', '<C-v>', '"+P', {desc = 'Panoyu koruyarak seçimin üzerine yapıştır'})
+map('s', '<C-v>', '<C-g>"+P', {desc = 'Panoyu koruyarak seçimin üzerine yapıştır'})
+map('i', '<C-v>', '<C-r><C-p>+', {desc = 'Panodan metni aynen yapıştır'})
+map('c', '<C-v>', '<C-r>+', {desc = 'Komut satırına yapıştır'})
+for _, key in ipairs({'y', 'Y', 'p', 'P', 'gp', 'gP', '[p', ']p', '[P', ']P', '<leader>y', '<leader>p'}) do
+  map({'n', 'x'}, key, '<Nop>', {desc = 'Kapalı: Ctrl+C / Ctrl+V kullan'})
+end
+for _, key in ipairs({'<C-Insert>', '<S-Insert>', '<MiddleMouse>'}) do
+  map({'n', 'x', 's', 'i', 'c'}, key, '<Nop>', {desc = 'Kapalı: Ctrl+C / Ctrl+V kullan'})
+end
+map({'i', 'c'}, '<C-r>', '<Nop>', {desc = 'Kapalı: Ctrl+V kullan'})
 map('t', '<Esc>', '<C-\\><C-n>', {desc = 'Terminalden normal moda'})
 -- Window controls use Space in normal mode; Escape leaves terminal input.
 local function close_window()
@@ -109,7 +122,7 @@ local function help()
       'Alt ↑ / ↓        Satırı / seçili bloğu taşı',
       'Ctrl d           Kelimeyi seç; tekrar bas: eşleşme ekle',
       'c → yaz → Esc Esc  Seçilen eşleşmeleri değiştir ve çık',
-      'Seçimde p / Space p  Panoyu koruyarak yapıştır',
+      'Ctrl c / Ctrl v  Kopyala / panoyu koruyarak yapıştır',
       'F6 / Space rr    Derle ve çalıştır',
       'F7               Proje terminalini aç / kapat',
       'Space t / rl     Çıktı panelini aç / kapat',

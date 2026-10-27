@@ -36,11 +36,19 @@ The leader is Space. Useful keys:
 | `Page Up` / `Page Down` | Scroll the viewport one line |
 | `Alt+↑` / `Alt+↓` | Move the current line or selected block; also works in insert mode |
 | `Ctrl+d` | Select the word; press again to add the next match |
-| Visual `p` / `Space p` | Replace the selection while preserving the clipboard |
+| `Ctrl+c` | Copy the selection, or the current line when nothing is selected |
+| `Ctrl+v` | Paste; replacing a selection preserves the clipboard |
 
 For multiple matches, press `Ctrl+d` repeatedly, then `c`, type the replacement,
 and press `Esc` twice to leave insert mode and clear the extra cursors.
 Multiple selections use [multicursor.nvim](https://github.com/jake-stewart/multicursor.nvim).
+
+Copy/paste in editor buffers uses `Ctrl+c` / `Ctrl+v`. Legacy `y/Y`, `p/P`,
+`gp/gP`, `[p/]p/[P/]P`, `Space y/p`, `Ctrl+Insert`, `Shift+Insert`,
+middle-click paste and insert/command-line register paste (`Ctrl+r`) are disabled.
+Letters still type normally in insert mode. Deleting or changing text does not
+overwrite the system clipboard. Terminal input keeps its own shortcuts,
+including `Ctrl+c` to interrupt a running program.
 
 `:IDEInfo` reports available language tools. Change project search directories in `lua/plugins/navigation.lua`. Some personal command labels and messages are in Turkish. Optional Exercism shortcuts expect exercises under `~/code/exercism`; account configuration is not included.
 
