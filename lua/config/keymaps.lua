@@ -11,6 +11,8 @@ map({'n', 'x', 'i'}, '<A-Down>', '<A-j>', {remap = true, desc = 'Satırı / seç
 map('n', '<C-d>', 'viw', {desc = 'Kelimeyi seç'})
 map('x', '<C-d>', function() require('multicursor-nvim').matchAddCursor(1) end,
   {desc = 'Sonraki eşleşmeyi seçime ekle'})
+map('n', 'cc', 'gcc', {remap = true, desc = 'Satırı yorum yap / yorumu kaldır'})
+map('x', 'cc', 'gcgv', {remap = true, desc = 'Seçimi yorum yap / yorumu kaldır'})
 map('n', '<leader><leader>', '<cmd>update<cr>', {desc = 'Kaydet'})
 local function window_mode(direction)
   if direction then vim.cmd.wincmd(direction) end
@@ -130,6 +132,7 @@ local function help()
       'Ctrl d           Kelimeyi seç; tekrar bas: eşleşme ekle',
       'c → yaz → Esc Esc  Seçilen eşleşmeleri değiştir ve çık',
       'Ctrl c / Ctrl v  Kopyala / panoyu koruyarak yapıştır',
+      'cc               Satırı / seçimi yorum yap veya kaldır',
       'F6 / Space rr    Derle ve çalıştır',
       'F7               Proje terminalini aç / kapat',
       'Space t / rl     Çıktı panelini aç / kapat',

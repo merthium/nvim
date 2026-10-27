@@ -39,9 +39,12 @@ The leader is Space. Useful keys:
 | `Ctrl+d` | Select the word; press again to add the next match |
 | `Ctrl+c` | Copy the selection, or the current line when nothing is selected |
 | `Ctrl+v` | Paste; replacing a selection preserves the clipboard |
+| `cc` in normal/visual mode | Toggle comments on the current line or one selected block; keep the block selected |
 
 For multiple matches, press `Ctrl+d` repeatedly, then `c`, type the replacement,
 and press `Esc` twice to leave insert mode and clear the extra cursors.
+In a multicursor selection, `c` remains the immediate change command; use `cc`
+with a single cursor or one visual block for commenting.
 Multiple selections use [multicursor.nvim](https://github.com/jake-stewart/multicursor.nvim).
 
 Copy/paste in editor buffers uses `Ctrl+c` / `Ctrl+v`. Legacy `y/Y`, `p/P`,
