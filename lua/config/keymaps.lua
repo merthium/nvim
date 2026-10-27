@@ -5,6 +5,13 @@ map('i', 'jk', '<Esc>', {desc = 'Normal mod'})
 map('i', 'kj', '<Esc>', {desc = 'Normal mod'})
 map({'n', 'x', 's', 'i'}, '<PageUp>', '<Cmd>normal! <C-y><CR>', {desc = 'Ekranı bir satır yukarı kaydır', silent = true})
 map({'n', 'x', 's', 'i'}, '<PageDown>', '<Cmd>normal! <C-e><CR>', {desc = 'Ekranı bir satır aşağı kaydır', silent = true})
+-- Reuse LazyVim's line/block movement, including indentation and insert mode.
+map({'n', 'x', 'i'}, '<A-Up>', '<A-k>', {remap = true, desc = 'Satırı / seçimi yukarı taşı'})
+map({'n', 'x', 'i'}, '<A-Down>', '<A-j>', {remap = true, desc = 'Satırı / seçimi aşağı taşı'})
+map('x', 'p', 'P', {desc = 'Panoyu koruyarak seçimin üzerine yapıştır'})
+map('n', '<C-d>', 'viw', {desc = 'Kelimeyi seç'})
+map('x', '<C-d>', function() require('multicursor-nvim').matchAddCursor(1) end,
+  {desc = 'Sonraki eşleşmeyi seçime ekle'})
 map('n', '<leader><leader>', '<cmd>update<cr>', {desc = 'Kaydet'})
 local function window_mode(direction)
   if direction then vim.cmd.wincmd(direction) end
@@ -23,7 +30,8 @@ map('n', '<leader>bp', '<cmd>bprevious<cr>', {desc = 'Önceki dosya'})
 map('n', '<leader>bo', require('custom.workflow').open_recent, {desc = 'Projenin son dosyaları'})
 map('n', '<leader>y', '"+y', {desc = 'Panoya kopyala'})
 map('x', '<leader>y', '"+y', {desc = 'Panoya kopyala'})
-map({'n', 'x'}, '<leader>p', '"+p', {desc = 'Panodan yapıştır'})
+map('n', '<leader>p', '"+p', {desc = 'Panodan yapıştır'})
+map('x', '<leader>p', '"+P', {desc = 'Panoyu koruyarak seçimin üzerine yapıştır'})
 map('t', '<Esc>', '<C-\\><C-n>', {desc = 'Terminalden normal moda'})
 -- Window controls use Space in normal mode; Escape leaves terminal input.
 local function close_window()
@@ -79,7 +87,6 @@ map('n', '<leader>fr', function() Snacks.picker.recent({cwd = require('custom.id
 map({'n', 'x'}, '<leader>sw', function() Snacks.picker.grep_word({cwd = require('custom.ide.project').root()}) end,
   {desc = 'Kelimeyi / seçimi projede ara'})
 map('n', '<leader>sR', function() Snacks.picker.resume() end, {desc = 'Son aramaya dön'})
-map('n', '<C-d>', '<C-d>zz', {desc = 'Yarım sayfa aşağı; imleci ortala'})
 map('n', '<C-u>', '<C-u>zz', {desc = 'Yarım sayfa yukarı; imleci ortala'})
 map('n', 'n', 'nzzzv', {desc = 'Sonraki eşleşmeyi ortala'})
 map('n', 'N', 'Nzzzv', {desc = 'Önceki eşleşmeyi ortala'})
@@ -99,6 +106,10 @@ local function help()
       'Space Space      Kaydet',
       'Ctrl s / Ctrl p  Kaydet / dosya bul',
       'Page Up / Down   Ekranı bir satır yukarı / aşağı kaydır',
+      'Alt ↑ / ↓        Satırı / seçili bloğu taşı',
+      'Ctrl d           Kelimeyi seç; tekrar bas: eşleşme ekle',
+      'c → yaz → Esc Esc  Seçilen eşleşmeleri değiştir ve çık',
+      'Seçimde p / Space p  Panoyu koruyarak yapıştır',
       'F6 / Space rr    Derle ve çalıştır',
       'F7               Proje terminalini aç / kapat',
       'Space t / rl     Çıktı panelini aç / kapat',

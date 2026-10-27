@@ -33,6 +33,14 @@ The leader is Space. Useful keys:
 | `Space ba` / `Space bh` | Pin file / open pinned files |
 | `-` | Edit directory with Oil |
 | `Space ?` | Key reference |
+| `Page Up` / `Page Down` | Scroll the viewport one line |
+| `Alt+↑` / `Alt+↓` | Move the current line or selected block; also works in insert mode |
+| `Ctrl+d` | Select the word; press again to add the next match |
+| Visual `p` / `Space p` | Replace the selection while preserving the clipboard |
+
+For multiple matches, press `Ctrl+d` repeatedly, then `c`, type the replacement,
+and press `Esc` twice to leave insert mode and clear the extra cursors.
+Multiple selections use [multicursor.nvim](https://github.com/jake-stewart/multicursor.nvim).
 
 `:IDEInfo` reports available language tools. Change project search directories in `lua/plugins/navigation.lua`. Some personal command labels and messages are in Turkish. Optional Exercism shortcuts expect exercises under `~/code/exercism`; account configuration is not included.
 

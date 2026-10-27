@@ -15,6 +15,7 @@
   "mini.ai": { "branch": "main", "commit": "c2c4278beb759aa24b9506f56a67186a6cc2209c" },
   "mini.icons": { "branch": "main", "commit": "f642e3ba8c12afbc8f32f6d77ef6597eac56786f" },
   "mini.pairs": { "branch": "main", "commit": "b1c5a726921b7a8c9321e9a7a208aa0571de5810" },
+  "multicursor.nvim": { "branch": "1.0", "commit": "c574bfc1f7e63dfea3e64b8453c9f7c660127238" },
   "nui.nvim": { "branch": "main", "commit": "10fc361835c856ba4233ef5ea135b919bf3dce97" },
   "nvim-dap": { "branch": "master", "commit": "cfa2d58f4537aca6ca83e2de1a0d9f1491121264" },
   "nvim-dap-python": { "branch": "master", "commit": "1808458eba2b18f178f990e01376941a42c7f93b" },
