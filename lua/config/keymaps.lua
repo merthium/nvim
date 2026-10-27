@@ -3,6 +3,7 @@ local ide = require('custom.ide.actions')
 require('custom.mouse').setup()
 map('i', 'jk', '<Esc>', {desc = 'Normal mod'})
 map('i', 'kj', '<Esc>', {desc = 'Normal mod'})
+map('n', '<CR>', 'o', {desc = 'Altına yeni satır aç ve yaz'})
 map({'n', 'x', 's', 'i'}, '<PageUp>', '<Cmd>normal! <C-y><CR>', {desc = 'Ekranı bir satır yukarı kaydır', silent = true})
 map({'n', 'x', 's', 'i'}, '<PageDown>', '<Cmd>normal! <C-e><CR>', {desc = 'Ekranı bir satır aşağı kaydır', silent = true})
 -- Reuse LazyVim's line/block movement, including indentation and insert mode.
@@ -133,6 +134,7 @@ local function help()
       'c → yaz → Esc Esc  Seçilen eşleşmeleri değiştir ve çık',
       'Ctrl c / Ctrl v  Kopyala / panoyu koruyarak yapıştır',
       'cc               Satırı / seçimi yorum yap veya kaldır',
+      'Enter (normal)   Altına yeni satır aç ve yaz',
       'F6 / Space rr    Derle ve çalıştır',
       'F7               Proje terminalini aç / kapat',
       'Space t / rl     Çıktı panelini aç / kapat',

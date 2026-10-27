@@ -40,6 +40,7 @@ The leader is Space. Useful keys:
 | `Ctrl+c` | Copy the selection, or the current line when nothing is selected |
 | `Ctrl+v` | Paste; replacing a selection preserves the clipboard |
 | `cc` in normal/visual mode | Toggle comments on the current line or one selected block; keep the block selected |
+| `Enter` in normal mode | Open a new line below, follow indentation and start typing there |
 
 For multiple matches, press `Ctrl+d` repeatedly, then `c`, type the replacement,
 and press `Esc` twice to leave insert mode and clear the extra cursors.
